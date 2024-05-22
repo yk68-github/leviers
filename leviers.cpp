@@ -11,26 +11,6 @@ Leviers::Leviers()
     std::unordered_set<int> set2 = {7, 9};
     std::unordered_set<int> set3 = {3};
     std::unordered_set<int> set4 = {7, 9, 14, 15};
-/* Tests */
-
-
-    Conjugaison resultat;
-    resultat = ConjuguerCalques(a, b);
-
-    if (resultat==Conjugaison::GARDERLESDEUX)
-    {
-        std::cout << "Garder les deux\n";
-    } else if (resultat==Conjugaison::GARDERPREMIER)
-            {
-                std::cout << "Garder premier\n";
-            } else // GARDERSECOND
-            {
-                std::cout << "Garder second\n";
-            }
-
-
-    string s = {"00001000"};
-    std::cout << ConvertFromBin(s) << std::endl;
 
     m_calque = std::make_pair(a, set1);
     m_VCalques.emplace_back(m_calque);
@@ -41,20 +21,16 @@ Leviers::Leviers()
     m_calque = std::make_pair(d, set4);
     m_VCalques.emplace_back(m_calque);
 
-    Leviers::VectorCalques res = {};
-    std::cout << "Avant appel" << std::endl;
-    std::cin.ignore();
-    std::cin.get();
     ReduireCalques(m_VCalques);
-    std::cout << "Après appel" << std::endl;
+
     pause();
 
-    for (auto r : res)
+    for (auto r : m_VCalques)
     {
         Leviers::Calque element = r;
         std::cout << "bitset = " << element.first.to_string() << std::endl;
     }
-
+    pause();
 }
 
 int Leviers::ConvertFromBin(string s)
@@ -108,7 +84,6 @@ void Leviers::ReduireCalques(Leviers::VectorCalques& m_VCalques)
     {
         Calque PremierElement = *it1;
         PremierSet = PremierElement.first;
-        PremiereListe = PremierElement.second;
 
         std::cout << "Avant deuxieme boucle" << std::endl;
         pause();
@@ -119,8 +94,8 @@ void Leviers::ReduireCalques(Leviers::VectorCalques& m_VCalques)
         while (it2!=m_VCalques.end() || (!(removed)))
         {
             Calque SecondElement = *it2;
-            auto SecondSet = SecondElement.first;
-            auto SecondListe = SecondElement.second;
+            SecondSet = SecondElement.first;
+
             resultat = ConjuguerCalques(PremierSet, SecondSet);
             if ( (resultat==Conjugaison::GARDERPREMIER) || (resultat==Conjugaison::GARDERLESDEUX) )
                 {
@@ -134,6 +109,7 @@ void Leviers::ReduireCalques(Leviers::VectorCalques& m_VCalques)
                         removed = true;
                 }
         } // end while it2
+        removed = false;
         if ((it2 == m_VCalques.end())) it1++;
     } // end while it1
     return;
