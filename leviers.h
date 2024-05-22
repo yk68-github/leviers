@@ -9,6 +9,10 @@
 #include <vector>
 #include <bitset>
 #include <list>
+#include <iterator>
+#include <algorithm>
+#include <random>
+#include <ctime>
 
 using std::string;
 
@@ -32,14 +36,15 @@ class Leviers
 
         static constexpr int LONGUEURMINIMALE = 0;
         static constexpr int LONGUEURMAXIMALE = 16;
-        std::bitset<32> objectif = {7};
+        std::bitset<32> objectif = {255};
         int m_longueur = 0;
         Calque m_calque = {};
         VectorCalques m_VCalques = {};
         void ReduireCalques();
         bool ConjuguerCalques(Leviers::iteratorVectorCalques it);
-        void AfficherBitsets();
+        void AfficherBitsets(const VectorCalques&);
         int ConvertFromBin(string);
+        void Combiner();
         void pause();
 };
 
