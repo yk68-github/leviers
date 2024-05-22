@@ -9,6 +9,7 @@
 #include <vector>
 #include <bitset>
 #include <list>
+#include <forward_list>
 #include <iterator>
 #include <algorithm>
 #include <random>
@@ -24,7 +25,8 @@ class Leviers
         typedef std::list< std::pair <std::bitset<32>, std::unordered_set<int>> >::iterator iteratorVectorCalques;
 
         /** Default constructor */
-        Leviers();
+        Leviers() = delete;
+        Leviers(const std::bitset<32>&, const std::vector<std::bitset<32>>&);
         /** Default destructor */
         virtual ~Leviers();
         void FixerLongueur(int);
@@ -41,10 +43,10 @@ class Leviers
         Calque m_calque = {};
         VectorCalques m_VCalques = {};
         void ReduireCalques();
-        bool ConjuguerCalques(Leviers::iteratorVectorCalques it);
+            bool ConjuguerCalques(Leviers::iteratorVectorCalques it);
+        void Combiner();
         void AfficherBitsets(const VectorCalques&);
         int ConvertFromBin(string);
-        void Combiner();
         void pause();
 };
 

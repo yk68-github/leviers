@@ -1,8 +1,19 @@
 #include "leviers.h"
 
-Leviers::Leviers()
+Leviers::Leviers(const std::bitset<32>& obj, const std::vector<std::bitset<32>>& vec)
 {
     //ctor
+    objectif = obj;
+    std::unordered_set<int> FirstSet = {};
+    for (int i = 0; i<(int)vec.size(); i++)
+    {
+        Calque element;
+        FirstSet.emplace(i);
+        element = std::make_pair(vec.at(i), FirstSet);
+        m_VCalques.push_back(element);
+        FirstSet.clear();
+    }
+/*
     std::bitset<32> a = {1};
     std::bitset<32> b = {2};
     std::bitset<32> c = {4};
@@ -24,12 +35,15 @@ Leviers::Leviers()
     m_VCalques.emplace_back(m_calque);
     m_calque = std::make_pair(e, set5);
     m_VCalques.emplace_back(m_calque);
-
+*/
 /*
     srand(time(NULL));
+    std::unordered_set<int> set1 = {};
     for (int i = 0; i<16; i++)
     {
-        m_VCalques.emplace_back(std::make_pair(std::bitset<32>(rand()%256), i));
+        set1.insert(i);
+        m_VCalques.emplace_back(std::make_pair(std::bitset<32>(rand()%256), set1));
+        set1.clear();
     }
 */
 
@@ -42,7 +56,6 @@ Leviers::Leviers()
     std::cout << "Combinaison\n";
     Combiner();
     AfficherBitsets(m_VCalques);
-
 }
 
 void Leviers::Combiner()
