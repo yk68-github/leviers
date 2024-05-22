@@ -6,7 +6,7 @@ Leviers::Leviers()
     std::bitset<32> a = {1};
     std::bitset<32> b = {4};
     std::bitset<32> c = {11};
-    std::bitset<32> d = {129};
+    std::bitset<32> d = {9};
     std::unordered_set<int> set1 = {4, 5};
     std::unordered_set<int> set2 = {7, 9};
     std::unordered_set<int> set3 = {3};
@@ -21,16 +21,12 @@ Leviers::Leviers()
     m_calque = std::make_pair(d, set4);
     m_VCalques.emplace_back(m_calque);
 
-    ReduireCalques(m_VCalques);
+    std::cout << "Lancer la reduction\n" ; pause();
 
-    pause();
+    AfficherBitsets();
+    ReduireCalques();
+    AfficherBitsets();
 
-    for (auto r : m_VCalques)
-    {
-        Leviers::Calque element = r;
-        std::cout << "bitset = " << element.first.to_string() << std::endl;
-    }
-    pause();
 }
 
 int Leviers::ConvertFromBin(string s)
@@ -69,114 +65,66 @@ const int Leviers::LireLongueur() const
     return m_longueur;
 }
 
-void Leviers::ReduireCalques(Leviers::VectorCalques& m_VCalques)
+void  Leviers::ReduireCalques()
 {
-    int size = m_VCalques.size(); // Vérifier la taille !
-    Conjugaison resultat;
-    std::bitset<32> PremierSet = {};
-    std::unordered_set<int> PremiereListe = {};
-    std::bitset<32> SecondSet  = {};
-    std::unordered_set<int> SecondeListe  = {};
-    auto it1 = m_VCalques.begin();
-    bool removed = false;
+    iteratorVectorCalques it1 = m_VCalques.begin();
+
+    bool toDelete = false;
 
     while (it1!=m_VCalques.end())
     {
-        Calque PremierElement = *it1;
-        PremierSet = PremierElement.first;
-
-        std::cout << "Avant deuxieme boucle" << std::endl;
-        pause();
-
-        auto it2 = it1;
-        it2++;
-
-        while (it2!=m_VCalques.end() || (!(removed)))
-        {
-            Calque SecondElement = *it2;
-            SecondSet = SecondElement.first;
-
-            resultat = ConjuguerCalques(PremierSet, SecondSet);
-            if ( (resultat==Conjugaison::GARDERPREMIER) || (resultat==Conjugaison::GARDERLESDEUX) )
+            auto itToDelete = it1;
+            toDelete = ConjuguerCalques(it1);
+            std::cout << "to delete = " << toDelete << std::endl;
+            it1++;
+            if (toDelete)
+            {
+                m_VCalques.erase(itToDelete);
+                toDelete = false;
+            } else
+            {
+               auto element = *itToDelete;
+               if ( (objectif | element.first) != objectif )
                 {
-                      m_VCalques.erase(it2);
-                      removed = true;
-                } else it2++;
-
-            if ( (resultat==Conjugaison::GARDERSECOND) || (resultat==Conjugaison::GARDERLESDEUX) )
-                {
-                        m_VCalques.erase(it1);
-                        removed = true;
+                    m_VCalques.erase(itToDelete);
+                    toDelete = false;
                 }
-        } // end while it2
-        removed = false;
-        if ((it2 == m_VCalques.end())) it1++;
-    } // end while it1
-    return;
+            }
+    }
 }
 
 
-
-/*
-        for (auto it2=(it+1);it2!=(m_VCalques.end()-1);++it2)
-        {
-
-        std::cout << "Pendant deuxieme boucle" << std::endl;
-        pause();
-
-            Calque SecondElement = *it2;
-            SecondSet = SecondElement.first;
-            SecondeListe = SecondElement.second;
-            resultat = ConjuguerCalques(PremierSet, SecondSet);
-            if ( (resultat==Conjugaison::GARDERPREMIER) || (resultat==Conjugaison::GARDERLESDEUX) )
-                {
-                        Retour.emplace_back(PremierElement);
-                }
-
-            if ( (resultat==Conjugaison::GARDERSECOND) || (resultat==Conjugaison::GARDERLESDEUX) )
-                {
-                        Retour.emplace_back(SecondElement);
-                }
-        } // end for it2
-    } // end for it
-
-
-*/
-
-
-Leviers::Conjugaison Leviers::ConjuguerCalques(std::bitset<32> premier, std::bitset<32> second)
+bool Leviers::ConjuguerCalques(Leviers::iteratorVectorCalques it)
 {
-    Leviers::Conjugaison resultat;
-    std::bitset<32> initial;
-    bool ok = false;
-/*
-    std::cout << (string)premier.to_string() << std::endl;
-    std::cout << (string)second.to_string() << std::endl;
-*/
-    if ( (premier.count()) >= (second.count()) )
-        {
-            initial=premier;
-            premier|=second;
-            if (premier==initial)
-                {
-                    resultat = Leviers::Conjugaison::GARDERPREMIER;
-                    ok = true;
-                }
-        }
-        else
-        {
-            initial = second;
-            second|=premier;
-            if (second==initial)
-                {
-                    resultat = Leviers::Conjugaison::GARDERSECOND;
-                    ok = true;
-                }
-        }
+    auto element = *it;
+    auto PremierSet = element.first;
+    bool toDelete = false;
 
-        if (!(ok)) resultat = Leviers::Conjugaison::GARDERLESDEUX;
+    iteratorVectorCalques boucle = m_VCalques.begin();
 
-    return resultat;
+    while (boucle != m_VCalques.end() && (!(toDelete)))
+    {
+        element = *boucle;
+        auto SecondSet = element.first;
+        if (boucle!=it)
+        {
+                if ((SecondSet | PremierSet) == SecondSet)
+                    toDelete = true;
+        }
+        boucle++;
+    }
+
+    return toDelete;
+}
+
+void Leviers::AfficherBitsets()
+{
+    for (auto r : m_VCalques)
+    {
+        Leviers::Calque element = r;
+        std::cout << "bitset = " << element.first.to_string() << std::endl;
+    }
+    pause();
 }
 
 void Leviers::pause()

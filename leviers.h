@@ -17,7 +17,7 @@ class Leviers
     public:
         typedef std::pair<std::bitset<32>, std::unordered_set<int>> Calque;
         typedef std::list< std::pair <std::bitset<32>, std::unordered_set<int>> > VectorCalques;
-
+        typedef std::list< std::pair <std::bitset<32>, std::unordered_set<int>> >::iterator iteratorVectorCalques;
 
         /** Default constructor */
         Leviers();
@@ -30,18 +30,15 @@ class Leviers
 
     private:
 
-
-
         static constexpr int LONGUEURMINIMALE = 0;
         static constexpr int LONGUEURMAXIMALE = 16;
-        enum class Conjugaison{ GARDERLESDEUX, GARDERPREMIER, GARDERSECOND };
-
+        std::bitset<32> objectif = {7};
         int m_longueur = 0;
-        std::bitset<32> objectif;
         Calque m_calque = {};
         VectorCalques m_VCalques = {};
-        void ReduireCalques(VectorCalques& m_VCalques);
-        Conjugaison ConjuguerCalques(std::bitset<32>, std::bitset<32>);
+        void ReduireCalques();
+        bool ConjuguerCalques(Leviers::iteratorVectorCalques it);
+        void AfficherBitsets();
         int ConvertFromBin(string);
         void pause();
 };
