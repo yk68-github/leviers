@@ -3,64 +3,28 @@
 Leviers::Leviers(const std::bitset<32>& obj, const std::vector<std::bitset<32>>& vec)
 {
     //ctor
-    objectif = obj;
+    m_objectif = obj;
     std::unordered_set<int> FirstSet = {};
-    for (int i = 0; i<(int)vec.size(); i++)
+
+    for (int LineNumber = 0; LineNumber<(int)vec.size(); LineNumber++)
     {
         Calque element;
-        FirstSet.emplace(i);
-        element = std::make_pair(vec.at(i), FirstSet);
-        m_VCalques.push_back(element);
+        FirstSet.emplace(LineNumber);
+        element = std::make_pair(vec.at(LineNumber), FirstSet);
+        m_LCalques.push_back(element);
         FirstSet.clear();
     }
-/*
-    std::bitset<32> a = {1};
-    std::bitset<32> b = {2};
-    std::bitset<32> c = {4};
-    std::bitset<32> d = {8};
-    std::bitset<32> e = {16};
-    std::unordered_set<int> set1 = {1};
-    std::unordered_set<int> set2 = {2};
-    std::unordered_set<int> set3 = {3};
-    std::unordered_set<int> set4 = {4};
-    std::unordered_set<int> set5 = {5};
 
-    m_calque = std::make_pair(a, set1);
-    m_VCalques.emplace_back(m_calque);
-    m_calque = std::make_pair(b, set2);
-    m_VCalques.emplace_back(m_calque);
-    m_calque = std::make_pair(c, set3);
-    m_VCalques.emplace_back(m_calque);
-    m_calque = std::make_pair(d, set4);
-    m_VCalques.emplace_back(m_calque);
-    m_calque = std::make_pair(e, set5);
-    m_VCalques.emplace_back(m_calque);
-*/
-/*
-    srand(time(NULL));
-    std::unordered_set<int> set1 = {};
-    for (int i = 0; i<16; i++)
-    {
-        set1.insert(i);
-        m_VCalques.emplace_back(std::make_pair(std::bitset<32>(rand()%256), set1));
-        set1.clear();
-    }
-*/
-
-    std::cout << "Lancer la reduction\n" ; pause();
-
-    AfficherBitsets(m_VCalques);
+    AfficherBitsets(m_LCalques);
     ReduireCalques();
-    std::cout << "Reste = " << std::endl;
-    AfficherBitsets(m_VCalques);
-    std::cout << "Combinaison\n";
+    AfficherBitsets(m_LCalques);
     Combiner();
-    AfficherBitsets(m_VCalques);
+    AfficherBitsets(m_LCalques);
 }
 
 void Leviers::Combiner()
 {
-    Leviers::VectorCalques m_NewVCalques = {};
+    Leviers::ListCalques NewLCalques = {};
     Leviers::Calque PremierElement = {};
     Leviers::Calque SecondElement = {};
 
@@ -68,21 +32,17 @@ void Leviers::Combiner()
     std::unordered_set<int> PremiereListe;
     std::bitset<32> SecondSet;
     std::unordered_set<int> SecondeListe;
-    iteratorVectorCalques it = m_VCalques.begin();
-    iteratorVectorCalques it2 = m_VCalques.begin();
+    iteratorListCalques it = m_LCalques.begin();
+    iteratorListCalques it2 = m_LCalques.begin();
 
     std::bitset<32> NouveauSet = {};
     std::unordered_set<int> NouvelleListe = {};
     Calque NouvelElement = {};
-    int i = 0;
-    int j = 0;
 
-    for(it=m_VCalques.begin(); it!=m_VCalques.end(); it++)
+    for(it=m_LCalques.begin(); it!=m_LCalques.end(); it++)
     {
         it2 = it; it2++;
-        i++; std::cout << "i = " << i << std::endl;
-        j = i;
-        while (it2!=m_VCalques.end())
+        while (it2!=m_LCalques.end())
         {
            PremierElement = *it;
            SecondElement = *it2;
@@ -95,26 +55,25 @@ void Leviers::Combiner()
            NouvelleListe.insert(PremiereListe.begin(), PremiereListe.end());
            NouvelleListe.insert(SecondeListe.begin(), SecondeListe.end());
            NouvelElement = std::make_pair(NouveauSet, NouvelleListe);
-           m_NewVCalques.emplace_back(NouvelElement);
+           NewLCalques.emplace_back(NouvelElement);
            NouvelleListe.clear();
-           j++; std::cout << "j = " << j << std::endl;
            it2++;
         }
     }
-    m_VCalques.clear();
-    m_VCalques = m_NewVCalques;
+    m_LCalques.clear();
+    m_LCalques = NewLCalques;
 }
 
 
-int Leviers::ConvertFromBin(string s)
+int Leviers::ConvertFromBin(std::string s)
 {
     int total = 0;
     int base = 1;
     char c;
 
-    for (int n = (s.size()-1); n>=0; n--)
+    for (int i = (s.size()-1); i>=0; i--)
     {
-        c = s[n];
+        c = s[i];
         if (c=='1') { total+=base; }
         base*=2;
 
@@ -144,44 +103,43 @@ const int Leviers::LireLongueur() const
 
 void  Leviers::ReduireCalques()
 {
-    iteratorVectorCalques it1 = m_VCalques.begin();
+    iteratorListCalques it1 = m_LCalques.begin();
     Calque element = {};
     bool toDelete = false;
 
-    while (it1!=m_VCalques.end())
+    while (it1!=m_LCalques.end())
     {
             auto itToDelete = it1;
-            toDelete = ConjuguerCalques(it1);
-            std::cout << "to delete = " << toDelete << std::endl;
+            toDelete = Fusionner2Calques(it1);
             it1++;
             if (toDelete)
             {
-                m_VCalques.erase(itToDelete);
+                m_LCalques.erase(itToDelete);
                 toDelete = false;
-            } else
+            }
+            else
             {
                element = *itToDelete;
-               if ( (objectif | element.first) != objectif )
+               if ( (m_objectif | element.first) != m_objectif )
                 {
-                    std::cout << "objectif                      " << objectif.to_string() << std::endl;
-                    std::cout << "incompatibilite avec objectif " << element.first.to_string() << std::endl;
-                    m_VCalques.erase(itToDelete);
+                    std::cout << "m_objectif                      " << m_objectif.to_string() << std::endl;
+                    std::cout << "incompatibilite avec m_objectif " << element.first.to_string() << std::endl;
+                    m_LCalques.erase(itToDelete);
                     toDelete = false;
                 }
             }
     }
 }
 
-
-bool Leviers::ConjuguerCalques(Leviers::iteratorVectorCalques it)
+bool Leviers::Fusionner2Calques(Leviers::iteratorListCalques it)
 {
     auto element = *it;
     auto PremierSet = element.first;
     bool toDelete = false;
 
-    iteratorVectorCalques boucle = m_VCalques.begin();
+    iteratorListCalques boucle = m_LCalques.begin();
 
-    while (boucle != m_VCalques.end() && (!(toDelete)))
+    while (boucle != m_LCalques.end() && (!(toDelete)))
     {
         element = *boucle;
         auto SecondSet = element.first;
@@ -192,20 +150,19 @@ bool Leviers::ConjuguerCalques(Leviers::iteratorVectorCalques it)
         }
         boucle++;
     }
-
     return toDelete;
 }
 
-void Leviers::AfficherBitsets(const Leviers::VectorCalques& v)
+void Leviers::AfficherBitsets(const Leviers::ListCalques& lc)
 {
-    for (auto r : v)
+    for (auto it1 : lc)
     {
-        Leviers::Calque element = r;
+        Leviers::Calque element = it1;
         std::cout << "bitset = " << element.first.to_string() << std::endl;
         std::cout << "liste = ";
-        for(auto it : element.second)
+        for(auto it2 : element.second) // loop unordered_set
         {
-            std::cout << it << "  ";
+            std::cout << it2 << "  ";
         }
         std::cout << std::endl;
     }

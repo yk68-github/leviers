@@ -21,8 +21,17 @@ int main()
     v.push_back(c);
     v.push_back(d);
 
-    Leviers leviers(objectif, v);
+    try
+    {
+        Leviers leviers(objectif, v);
+    }
+    catch(std::invalid_argument &error)
+    {
+        std::cout << "Argument invalide : la longueur de l'objectif est invalide.";
+    }
 
+
+    cin.ignore();
     cin.get();
     return 0;
 }
