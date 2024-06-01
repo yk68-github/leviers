@@ -5,6 +5,7 @@
 #include <random>
 #include <ctime>
 #include <string>
+#include <cmath>
 #include <sstream>
 #include <iomanip>
 
@@ -20,27 +21,30 @@ int main()
     vector<int> v1 = {};
     std::vector<int> v2 = {1, 2, 4, 8, 16, 32, 64, 128};
     int rd = 0;
+    int val = 0;
+    int obj = 32767;
 
-    for (int i = 0; i<1000; i++)
+    for (int i = 0; i<50; i++)
     {
-        rd = rand()%8192;
-        v1.push_back(rd);
+        for (int j = 0;j<3;j++)
+            {
+                rd = rand()%16;
+                val += std::pow(2, rd);
+            }
+        v1.push_back(val);
+        val=0;
     }
-
-
-    v1.push_back(16384);
-    v1.push_back(8192);
 
     std::unordered_set<int> Sol = {};
 
-
-    Leviers leviers1(32767, v1);
+    Leviers leviers1(obj, v1);
     Sol = leviers1.LireSolution();
 
     std::cout << "Sol Size = " << Sol.size() << std::endl;
     std::cout << "Solution a la fin\n";
     std::bitset<32> bssol;
 
+    std::cout << std::setw(4) << "obj" << " = " << std::bitset<32>(obj).to_string() << std::endl;
     for (auto SolLev : Sol)
     {
         bssol=v1.at(SolLev);

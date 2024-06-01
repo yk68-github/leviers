@@ -34,25 +34,21 @@ class Leviers
         /** Default destructor */
         virtual ~Leviers();
 
-        void FixerLongueur(int);
-        const int LireLongueur() const;
-        std::unordered_set<int> LireSolution() const;
+        const std::unordered_set<int> LireSolution() const;
 
     protected:
 
     private:
-        static constexpr int LONGUEURMINIMALE = 4;
-        static constexpr int LONGUEURMAXIMALE = 16;
-
         Bs32 m_objectif = Bs32(255);
-        int m_longueur = 4;
         Calque m_calque = {};
         ListCalques m_LCalques = {};
         bool SolutionTrouvee = false;
-        std::unordered_set<int> Solution;
+        std::unordered_set<int> Solution = {};
 
         void Init(const std::vector<Bs32>&);
         void ConstruireLCalques(const std::vector<Bs32>&);
+
+        void EffacerTropGrands();
 
         const bool SolutionExiste() const;
 

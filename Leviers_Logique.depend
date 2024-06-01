@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1717181939 source:e:\code\0132\leviers_logique\main.cpp
+1717261281 source:e:\code\0132\leviers_logique\main.cpp
 	<iostream>
 	<vector>
 	<bitset>
@@ -7,14 +7,15 @@
 	<random>
 	<ctime>
 	<string>
+	<cmath>
 	<sstream>
 	<iomanip>
 	"leviers.h"
 
-1717181457 source:e:\code\0132\leviers_logique\leviers.cpp
+1717262616 source:e:\code\0132\leviers_logique\leviers.cpp
 	"leviers.h"
 
-1717181368 e:\code\0132\leviers_logique\leviers.h
+1717262692 e:\code\0132\leviers_logique\leviers.h
 	<iostream>
 	<cstdint>
 	<utility>
