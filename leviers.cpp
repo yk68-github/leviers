@@ -9,7 +9,7 @@ Leviers::Leviers(const Bs32 obj, const std::vector<Bs32>& vec)
     Init(vec);
 }
 
-Leviers::Leviers(const Bs32 obj, const std::vector<int>& vecInt)
+Leviers::Leviers(const Bs32 obj, const std::vector<long int>& vecInt)
 {
     m_objectif = obj;
 
@@ -21,13 +21,13 @@ Leviers::Leviers(const Bs32 obj, const std::vector<int>& vecInt)
     Init(bs);
 }
 
-Leviers::Leviers(const int obj, const std::vector<Bs32>& vec)
+Leviers::Leviers(const long int obj, const std::vector<Bs32>& vec)
 {
     m_objectif = std::bitset<32>(obj);
     Init(vec);
 }
 
-Leviers::Leviers(const int obj, const std::vector<int>& vecInt)
+Leviers::Leviers(const long int obj, const std::vector<long int>& vecInt)
 {
     m_objectif = std::bitset<32>(obj);
     std::vector<std::bitset<32>> bs = {};
@@ -40,7 +40,7 @@ Leviers::Leviers(const int obj, const std::vector<int>& vecInt)
 
 Leviers::~Leviers()
 {
-    //dtor
+    //destructeur
 }
 
 /* Init, les calculs se font ici */
@@ -48,7 +48,7 @@ Leviers::~Leviers()
 void Leviers::Init(const std::vector<Bs32>& vec)
 {
     ConstruireLCalques(vec);
-    EffacerTropGrands();
+    EnleverIncompatibles();
 
     if (SolutionExiste())
     {
@@ -69,33 +69,35 @@ void Leviers::ConstruireLCalques(const std::vector<std::bitset<32>>& vec)
     std::unordered_set<int> FirstSet = {};
     Calque element;
 
-    for (int LineNumber = 0; LineNumber<(int)vec.size(); LineNumber++)
+    for (int Indice = 0; Indice<(int)vec.size(); Indice++)
     {
-        FirstSet.emplace(LineNumber);
-        element = std::make_pair(vec.at(LineNumber), FirstSet);
+        FirstSet.emplace(Indice);
+        element = std::make_pair(vec.at(Indice), FirstSet);
         m_LCalques.push_back(element);
         FirstSet.clear();
     }
 }
 
-void Leviers::EffacerTropGrands()
+void Leviers::EnleverIncompatibles()
 {
-    iteratorListCalques it = m_LCalques.begin();
-    iteratorListCalques itToDelete;
-    Bs32 bs = {};
-    while (it != m_LCalques.end())
+    iteratorListCalques it1 = m_LCalques.begin();
+    iteratorListCalques itToDelete = {};
+    Calque element = {};
+
+    while ( (it1 != m_LCalques.end()) )
     {
-        itToDelete = it;
-        bs = (*itToDelete).first;
-        it++;
-        if (bs.to_ullong() > m_objectif.to_ullong())
+        itToDelete = it1;
+        it1++;
+        element = *itToDelete;
+
+        if ((m_objectif | (*itToDelete).first) != m_objectif)
         {
-            m_LCalques.erase(itToDelete); // calque trop grand
+            m_LCalques.erase(itToDelete);  // Le calque est incompatible
         }
     }
 }
 
-/* D'abord vérifier si une solution existe, avant de la rechercher */
+/* D'abord vérifier si une solution existe à la lecture du fichier, avant de la rechercher */
 
 const bool Leviers::SolutionExiste() const //
 {
@@ -127,21 +129,12 @@ void  Leviers::ReduireCalques()
         itToDelete = it1;
         it1++;
         element = *itToDelete;
-
-        if ((m_objectif | (*itToDelete).first) != m_objectif)
-        {
-            m_LCalques.erase(itToDelete);  // Le calque est incompatible
-            toDelete = false;
-        }
-        else
-        {
-            toDelete = Fusionner2Calques(itToDelete);
-            if (toDelete)
+        toDelete = Fusionner2Calques(itToDelete);
+        if (toDelete)
             {
                 m_LCalques.erase(itToDelete); // Le calque peut être absorbé
                 toDelete = false;
-            }
-        }
+            }  // end if
     } // end while
 }
 
@@ -159,7 +152,7 @@ const bool Leviers::Fusionner2Calques(Leviers::iteratorListCalques it)
     {
         element = *boucle;
         auto SecondSet = element.first;
-        if (boucle!=it)
+        if (boucle!=it) // Ne pas s'effacer soi-même
         {
                 if ((SecondSet | PremierSet) == SecondSet)
                 {

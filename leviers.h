@@ -8,7 +8,6 @@
 #include <vector>
 #include <bitset>
 #include <list>
-#include <forward_list>
 #include <iterator>
 #include <algorithm>
 #include <random>
@@ -28,9 +27,9 @@ class Leviers
         Leviers() = delete;
         /** Constructors  */
         Leviers(const Bs32, const std::vector<std::bitset<32>>&);
-        Leviers(const Bs32, const std::vector<int>&);
-        Leviers(const int, const std::vector<std::bitset<32>>&);
-        Leviers(const int, const std::vector<int>&);
+        Leviers(const Bs32, const std::vector<long int>&);
+        Leviers(const long int, const std::vector<std::bitset<32>>&);
+        Leviers(const long int, const std::vector<long int>&);
         /** Default destructor */
         virtual ~Leviers();
 
@@ -46,9 +45,10 @@ class Leviers
         std::unordered_set<int> Solution = {};
 
         void Init(const std::vector<Bs32>&);
+
         void ConstruireLCalques(const std::vector<Bs32>&);
 
-        void EffacerTropGrands();
+        void EnleverIncompatibles();
 
         const bool SolutionExiste() const;
 
